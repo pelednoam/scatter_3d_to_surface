@@ -29,7 +29,7 @@ importlib.reload(colorbar_panel)
 
 color_surface = sts_panel.color_surface
 set_colorbar_max_min = colorbar_panel.set_colorbar_max_min
-
+change_cm = sts_panel.change_cm
 
 def init(addon_prefs):
     code_fol = sts_utils.get_parent_fol(sts_utils.get_parent_fol())

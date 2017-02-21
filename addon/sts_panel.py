@@ -35,17 +35,17 @@ def load_ply_file():
 
 def process_ply():
     cm = bpy.context.scene.colorbar_files.replace('-', '_')
-    FOL = bpy.path.abspath('//')
+    # FOL = bpy.path.abspath('//')
     change_cm(cm)
 
-    basename = sts_utils.namebase(bpy.path.abspath(bpy.context.scene.ply_file))
-    STSPanel.vert_values = np.load(op.join(FOL, '{}_values.npy'.format(basename)))
-    STSPanel.lookup = np.load(op.join(FOL, '{}_faces_verts.npy'.format(basename)))
-    STSPanel.data_min = np.min(STSPanel.vert_values)
-    STSPanel.data_max = np.max(STSPanel.vert_values)
+    # basename = sts_utils.namebase(bpy.path.abspath(bpy.context.scene.ply_file))
+    # STSPanel.vert_values = np.load(op.join(FOL, '{}_values.npy'.format(basename)))
+    # STSPanel.lookup = np.load(op.join(FOL, '{}_faces_verts.npy'.format(basename)))
+    # STSPanel.data_min = np.min(STSPanel.vert_values)
+    # STSPanel.data_max = np.max(STSPanel.vert_values)
     _addon().set_colorbar_max_min(STSPanel.data_max, STSPanel.data_min)
-    STSPanel.colors_ratio = 256 / (STSPanel.data_max - STSPanel.data_min)
-    print(STSPanel.data_min, STSPanel.data_max)
+    # STSPanel.colors_ratio = 256 / (STSPanel.data_max - STSPanel.data_min)
+    # print(STSPanel.data_min, STSPanel.data_max)
     color_surface(cm)
 
 
@@ -81,12 +81,7 @@ def color_surface(cm):
 def change_cm(cm):
     FOL = bpy.path.abspath('//')
     print('Chaging cm to {}'.format(cm))
-    basename = sts_utils.namebase(bpy.path.abspath(bpy.context.scene.ply_file))
     TITLE = 'values'
-
-    vert_values = np.load(op.join(FOL, '{}_values.npy'.format(basename)))
-    data_min = np.min(vert_values)
-    data_max = np.max(vert_values)
 
     colormap_fname = op.join(FOL, 'cm', '{}.npy'.format(cm))
     colormap = np.load(colormap_fname)
@@ -97,8 +92,8 @@ def change_cm(cm):
         cur_mat.diffuse_color = colormap[ind]
 
     bpy.data.objects['colorbar_title'].data.body = bpy.data.objects['colorbar_title_camera'].data.body = TITLE
-    bpy.data.objects['colorbar_max'].data.body = '{:.2f}'.format(data_max)
-    bpy.data.objects['colorbar_min'].data.body = '{:.2f}'.format(data_min)
+    bpy.data.objects['colorbar_max'].data.body = '{:.2f}'.format(STSPanel.data_max)
+    bpy.data.objects['colorbar_min'].data.body = '{:.2f}'.format(STSPanel.data_min)
 
 
 def sts_draw(self, context):
@@ -136,6 +131,16 @@ class STSPanel(bpy.types.Panel):
 def init(addon):
     print('Loading sts panel')
     STSPanel.addon = addon
+
+    root_fol = bpy.path.abspath('//')
+    basename = sts_utils.namebase(bpy.path.abspath(bpy.context.scene.ply_file))
+    STSPanel.vert_values = np.load(op.join(root_fol, '{}_values.npy'.format(basename)))
+    STSPanel.lookup = np.load(op.join(root_fol, '{}_faces_verts.npy'.format(basename)))
+    STSPanel.data_min = np.min(STSPanel.vert_values)
+    STSPanel.data_max = np.max(STSPanel.vert_values)
+    _addon().set_colorbar_max_min(STSPanel.data_max, STSPanel.data_min)
+    STSPanel.colors_ratio = 256 / (STSPanel.data_max - STSPanel.data_min)
+
     register()
     STSPanel.init = True
 

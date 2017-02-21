@@ -35,7 +35,7 @@ def load_colormap():
         cur_mat = cb_obj.active_material
         cur_mat.diffuse_color = colormap[ind]
         # print('Changing {} to {}'.format(cb_obj_name, colormap[ind]))
-
+    _addon().change_cm(colormap_name)
 
 def get_colormap_name():
     return bpy.context.scene.colorbar_files

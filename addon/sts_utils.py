@@ -1,5 +1,8 @@
 import os.path as op
-# import bpy
+try:
+    import bpy
+except:
+    pass
 
 def get_parent_fol(fol=None):
     if fol is None:
