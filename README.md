@@ -11,4 +11,6 @@ Transforms a 3d coordinate with values into a colored surfacce
 
 ### Preprocessing
 
+First you need to create a mesh from the 3D points:
+
 
