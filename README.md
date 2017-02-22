@@ -1,4 +1,4 @@
-# scatter 3D to surface
+# 3D Scatter to Surface
 
 Transforms 3D coordinates (3D scatter plot) with values into a colored surfacce
 Visit the wiki pages for:
