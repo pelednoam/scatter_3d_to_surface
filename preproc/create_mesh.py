@@ -49,8 +49,15 @@ def calc_faces_perim(verts, faces_perim_fname=''):
 
 def load_verts_data(root_fol, mat_fname):
     input_fname = op.join(root_fol, mat_fname)
-    d = sio.loadmat(input_fname)
-    data = d['DiffMuscle']
+    input_file_type = utils.file_type(input_fname)
+    if input_file_type == 'mat':
+        d = sio.loadmat(input_fname)
+        var_name = utils.get_matlab_var_name(d)
+        data = d[var_name]
+    elif input_file_type == 'npy':
+        data = np.load(input_fname)
+    elif input_fname == 'csv':
+        data = np.genfromtxt(input_fname, dtype=float, delimiter=',')
     verts = data[:, :3]
     values = data[:, 3]
     values[np.isnan(values)] = 0

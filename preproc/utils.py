@@ -76,3 +76,12 @@ def make_dir(fol):
     if not op.isdir(fol):
         os.makedirs(fol)
     return fol
+
+
+def file_type(fname):
+    return op.splitext(op.basename(fname))[1][1:]
+
+
+def get_matlab_var_name(d):
+    return [var_name for var_name in d.keys() if var_name not in
+            ['__header__', '__globals__', '__version__']][0]
