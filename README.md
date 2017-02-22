@@ -13,4 +13,6 @@ Transforms 3D coordinates (3D scatter plot) with values into a colored surfacce
 
 First you need to create a mesh from the 3D points:
 
+'python -m preproc.create_mesh -d file-name -r root-fol'
+
 
