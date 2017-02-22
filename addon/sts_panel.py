@@ -24,34 +24,30 @@ def _addon():
 def load_ply_file():
     ply_fname = bpy.path.abspath(bpy.context.scene.ply_file)
     print('Loading ply file {}'.format(ply_fname))
-    bpy.ops.import_mesh.ply(filepath=ply_fname)
-    cur_obj = bpy.data.objects['DiffMuscle2']
-    cur_obj.select = True
-    bpy.ops.object.shade_smooth()
-    cur_obj.hide = False
-    cur_obj.name = 'DiffMuscle2'
-    cur_obj.active_material = bpy.data.materials['Activity_map_mat']
+    if op.isfile(ply_fname):
+        bpy.ops.import_mesh.ply(filepath=ply_fname)
+        cur_obj = bpy.data.objects['DiffMuscle2']
+        cur_obj.select = True
+        bpy.ops.object.shade_smooth()
+        cur_obj.hide = False
+        cur_obj.name = 'DiffMuscle2'
+        cur_obj.active_material = bpy.data.materials['Activity_map_mat']
+        return True
+    else:
+        return False
 
 
 def process_ply():
     cm = bpy.context.scene.colorbar_files.replace('-', '_')
-    # FOL = bpy.path.abspath('//')
+    set_values_variables()
     change_cm(cm)
-
-    # basename = sts_utils.namebase(bpy.path.abspath(bpy.context.scene.ply_file))
-    # STSPanel.vert_values = np.load(op.join(FOL, '{}_values.npy'.format(basename)))
-    # STSPanel.lookup = np.load(op.join(FOL, '{}_faces_verts.npy'.format(basename)))
-    # STSPanel.data_min = np.min(STSPanel.vert_values)
-    # STSPanel.data_max = np.max(STSPanel.vert_values)
     _addon().set_colorbar_max_min(STSPanel.data_max, STSPanel.data_min)
-    # STSPanel.colors_ratio = 256 / (STSPanel.data_max - STSPanel.data_min)
-    # print(STSPanel.data_min, STSPanel.data_max)
     color_surface(cm)
 
 
 def color_surface(cm):
-    FOL = bpy.path.abspath('//')
-    colormap_fname = op.join(FOL, 'cm', '{}.npy'.format(cm))
+    root_fol = bpy.path.abspath('//')
+    colormap_fname = op.join(root_fol, 'cm', '{}.npy'.format(cm))
     print('Coloring using {}'.format(colormap_fname))
     cm = np.load(colormap_fname)
     colors_indices = ((np.array(STSPanel.vert_values) - STSPanel.data_min) * STSPanel.colors_ratio).astype(int)
@@ -79,11 +75,11 @@ def color_surface(cm):
 
 
 def change_cm(cm):
-    FOL = bpy.path.abspath('//')
+    root_fol = bpy.path.abspath('//')
     print('Chaging cm to {}'.format(cm))
-    TITLE = 'values'
+    cb_title = 'values'
 
-    colormap_fname = op.join(FOL, 'cm', '{}.npy'.format(cm))
+    colormap_fname = op.join(root_fol, 'cm', '{}.npy'.format(cm))
     colormap = np.load(colormap_fname)
     for ind in range(colormap.shape[0]):
         cb_obj_name = 'cb.{0:0>3}'.format(ind)
@@ -91,7 +87,7 @@ def change_cm(cm):
         cur_mat = cb_obj.active_material
         cur_mat.diffuse_color = colormap[ind]
 
-    bpy.data.objects['colorbar_title'].data.body = bpy.data.objects['colorbar_title_camera'].data.body = TITLE
+    bpy.data.objects['colorbar_title'].data.body = bpy.data.objects['colorbar_title_camera'].data.body = cb_title
     bpy.data.objects['colorbar_max'].data.body = '{:.2f}'.format(STSPanel.data_max)
     bpy.data.objects['colorbar_min'].data.body = '{:.2f}'.format(STSPanel.data_min)
 
@@ -109,8 +105,8 @@ class LoadButton(bpy.types.Operator):
     bl_options = {"UNDO"}
 
     def invoke(self, context, event=None):
-        load_ply_file()
-        process_ply()
+        if load_ply_file():
+            process_ply()
         return {'PASS_THROUGH'}
 
 
@@ -131,18 +127,22 @@ class STSPanel(bpy.types.Panel):
 def init(addon):
     print('Loading sts panel')
     STSPanel.addon = addon
-
-    root_fol = bpy.path.abspath('//')
-    basename = sts_utils.namebase(bpy.path.abspath(bpy.context.scene.ply_file))
-    STSPanel.vert_values = np.load(op.join(root_fol, '{}_values.npy'.format(basename)))
-    STSPanel.lookup = np.load(op.join(root_fol, '{}_faces_verts.npy'.format(basename)))
-    STSPanel.data_min = np.min(STSPanel.vert_values)
-    STSPanel.data_max = np.max(STSPanel.vert_values)
-    _addon().set_colorbar_max_min(STSPanel.data_max, STSPanel.data_min)
-    STSPanel.colors_ratio = 256 / (STSPanel.data_max - STSPanel.data_min)
-
+    set_values_variables()
     register()
     STSPanel.init = True
+
+
+def set_values_variables():
+    root_fol = bpy.path.abspath('//')
+    basename = sts_utils.namebase(bpy.path.abspath(bpy.context.scene.ply_file))
+    values_fname = op.join(root_fol, '{}_values.npy'.format(basename))
+    if op.isfile(values_fname):
+        STSPanel.vert_values = np.load(values_fname)
+        STSPanel.lookup = np.load(op.join(root_fol, '{}_faces_verts.npy'.format(basename)))
+        STSPanel.data_min = np.min(STSPanel.vert_values)
+        STSPanel.data_max = np.max(STSPanel.vert_values)
+        _addon().set_colorbar_max_min(STSPanel.data_max, STSPanel.data_min)
+        STSPanel.colors_ratio = 256 / (STSPanel.data_max - STSPanel.data_min)
 
 
 def register():

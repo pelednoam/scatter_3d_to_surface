@@ -2,6 +2,7 @@ import os.path as op
 import numpy as np
 from collections import Counter
 import traceback
+import os
 from addon.scripts.scripts_utils import Bag
 from addon.scripts import scripts_utils as su
 try:
@@ -67,7 +68,11 @@ def write_ply_file(verts, faces, ply_file_name, write_also_npz=False):
         return False
 
 
-def should_run(args, func_name):
-    if 'exclude' not in args:
-        args.exclude = []
-    return ('all' in args.function or func_name in args.function) and func_name not in args.exclude
+def should_run(function, func_name):
+    return 'all' in  function or func_name in function
+
+
+def make_dir(fol):
+    if not op.isdir(fol):
+        os.makedirs(fol)
+    return fol
