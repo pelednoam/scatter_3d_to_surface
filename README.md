@@ -1,6 +1,6 @@
 # scatter 3D to surface
 
-Transforms a 3d coordinate with values into a colored surfacce
+Transforms 3D coordinates (3D scatter plot) with values into a colored surfacce
 
 ### Installation:
 - Download [Blender](https://www.blender.org/download/) (2.78 and above).
