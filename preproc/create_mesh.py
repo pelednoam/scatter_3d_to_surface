@@ -67,14 +67,17 @@ def load_verts_data(root_fol, mat_fname):
 def copy_files(root_fol, data_name):
     new_blend_fname = op.join(root_fol, '{}.blend'.format(data_name))
     create_new_blend_file = True
+    resources_fol = op.join(utils.get_parent_fol(__file__, 2), 'resources')
+    cm_fol = op.join(resources_fol, 'cm')
     if op.isfile(new_blend_fname):
         ret = input("The blend file {} already exist, overwrite (y/n)? ".format(new_blend_fname))
         if not au.is_true(ret):
             create_new_blend_file = False
     if create_new_blend_file:
+        shutil.copy(op.join(resources_fol, 'empty_surface.blend'),
+                    op.join(root_fol, 'empty_surface.blend'))
         shutil.copy(op.join(root_fol, 'empty_surface.blend'), new_blend_fname)
     utils.make_dir(op.join(root_fol, 'cm'))
-    cm_fol = op.join(utils.get_parent_fol(__file__, 2), 'resources', 'cm')
     for cm_file in glob.glob(op.join(cm_fol, '*.npy')):
         new_cm_fname = op.join(root_fol, 'cm', cm_file.split(op.sep)[-1])
         shutil.copy(cm_file, op.join(root_fol, 'cm', new_cm_fname))
