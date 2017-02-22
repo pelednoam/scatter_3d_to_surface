@@ -2,7 +2,7 @@
 
 Transforms 3D coordinates (3D scatter plot) with values into a colored surface.
 
-For example, the Matlab 3D scatter plot
+For example, this Matlab 3D scatter plot:
 
 ![Example](https://cloud.githubusercontent.com/assets/1643819/23219482/30373a4e-f8ed-11e6-99c7-161c723a82e8.jpg)
 
